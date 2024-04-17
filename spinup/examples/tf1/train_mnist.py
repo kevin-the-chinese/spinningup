@@ -11,8 +11,8 @@ def mlp(x, hidden_sizes=(32,), activation=tf.tanh, output_activation=None):
 
 
 # Simple script for training an MLP on MNIST.
-def train_mnist(steps_per_epoch=100, epochs=5, 
-                lr=1e-3, layers=2, hidden_size=64, 
+def train_mnist(steps_per_epoch=100, epochs=5,
+                lr=1e-3, layers=2, hidden_size=64,
                 logger_kwargs=dict(), save_freq=1):
 
     logger = EpochLogger(**logger_kwargs)
@@ -32,14 +32,14 @@ def train_mnist(steps_per_epoch=100, epochs=5,
     y = tf.one_hot(y_ph, 10)
     loss = tf.losses.softmax_cross_entropy(y, logits)
     acc = tf.reduce_mean(tf.cast(tf.equal(y_ph, predict), tf.float32))
-    train_op = tf.train.AdamOptimizer().minimize(loss)
+    train_op = tf.optimizers.Adam().minimize(loss)
 
     # Prepare session
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
     # Setup model saving
-    logger.setup_tf_saver(sess, inputs={'x': x_ph}, 
+    logger.setup_tf_saver(sess, inputs={'x': x_ph},
                                 outputs={'logits': logits, 'predict': predict})
 
     start_time = time.time()

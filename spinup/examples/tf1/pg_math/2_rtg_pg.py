@@ -16,7 +16,7 @@ def reward_to_go(rews):
         rtgs[i] = rews[i] + (rtgs[i+1] if i+1 < n else 0)
     return rtgs
 
-def train(env_name='CartPole-v0', hidden_sizes=[32], lr=1e-2, 
+def train(env_name='CartPole-v0', hidden_sizes=[32], lr=1e-2,
           epochs=50, batch_size=5000, render=False):
 
     # make environment, check spaces, get obs / act dims
@@ -44,7 +44,7 @@ def train(env_name='CartPole-v0', hidden_sizes=[32], lr=1e-2,
     loss = -tf.reduce_mean(weights_ph * log_probs)
 
     # make train op
-    train_op = tf.train.AdamOptimizer(learning_rate=lr).minimize(loss)
+    train_op = tf.optimizers.Adam(learning_rate=lr).minimize(loss)
 
     sess = tf.InteractiveSession()
     sess.run(tf.global_variables_initializer())
