@@ -37,8 +37,8 @@ RL methods have recently enjoyed a wide variety of successes. For example, it's 
 
 It's also famously been used to create breakthrough AIs for sophisticated strategy games, most notably `Go`_ and `Dota`_, taught computers to `play Atari games`_ from raw pixels, and trained simulated robots `to follow human instructions`_.
 
-.. _`Go`: https://deepmind.com/research/alphago/
-.. _`Dota`: https://blog.openai.com/openai-five/
+.. _`Go`: https://deepmind.google/research/breakthroughs/alphago/
+.. _`Dota`: https://openai.com/index/openai-five/
 .. _`play Atari games`: https://deepmind.com/research/dqn/
 .. _`to follow human instructions`: https://blog.openai.com/deep-reinforcement-learning-from-human-preferences/
 
