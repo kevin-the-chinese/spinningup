@@ -30,3 +30,18 @@ If you reference or use Spinning Up in your research, please cite:
     year = {2018}
 }
 ```
+
+
+source /opt/conda/etc/profile.d/conda.sh
+conda activate spinningup
+sudo apt-get update && sudo apt-get install libopenmpi-dev
+pip install opencv-python==4.3.0.38
+
+cd spinningup
+pip install -e .
+
+python -m spinup.run ppo --hid "[32,32]" --env LunarLander-v2 --exp_name installtest --gamma 0.999
+
+python -m spinup.run test_policy data/installtest/installtest_s0
+
+python -m spinup.run plot data/installtest/installtest_s0
