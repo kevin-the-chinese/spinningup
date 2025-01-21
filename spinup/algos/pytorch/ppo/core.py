@@ -14,11 +14,11 @@ def combined_shape(length, shape=None):
     return (length, shape) if np.isscalar(shape) else (length, *shape)
 
 
-def mlp(sizes, activation, output_activation=nn.Identity):
+def mlp(sizes, activation, output_activation=nn.Softmax):
     layers = []
-    for j in range(len(sizes)-1):
-        act = activation if j < len(sizes)-2 else output_activation
-        layers += [nn.Linear(sizes[j], sizes[j+1]), act()]
+    for j in range(len(sizes) - 1):
+        act = activation if j < len(sizes) - 2 else output_activation
+        layers += [nn.Linear(sizes[j], sizes[j + 1]), act(dim=-1) if act == nn.Softmax else act()]
     return nn.Sequential(*layers)
 
 
@@ -109,7 +109,8 @@ class MLPActorCritic(nn.Module):
 
 
     def __init__(self, observation_space, action_space, 
-                 hidden_sizes=(64,64), activation=nn.Tanh):
+                 hidden_sizes=(64,64), activation=nn.Tanh, 
+                 load_path=None):
         super().__init__()
 
         obs_dim = observation_space.shape[0]
@@ -123,6 +124,20 @@ class MLPActorCritic(nn.Module):
         # build value function
         self.v  = MLPCritic(obs_dim, hidden_sizes, activation)
 
+        # Load model if load_path is provided
+        if load_path:
+            self.load_model(load_path)
+
+    def save_model(self, save_path):
+        # Save both policy and value network
+        torch.save(self.pi.state_dict(), f"{save_path}_pi.pth")
+        torch.save(self.v.state_dict(), f"{save_path}_v.pth")
+
+    def load_model(self, load_path):
+        # Load both policy and value network
+        self.pi.load_state_dict(torch.load(f"{load_path}_pi.pth", map_location=torch.device('cpu')))
+        self.v.load_state_dict(torch.load(f"{load_path}_v.pth", map_location=torch.device('cpu')))
+        
     def step(self, obs):
         with torch.no_grad():
             pi = self.pi._distribution(obs)

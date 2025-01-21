@@ -7,7 +7,7 @@ import spinup.algos.pytorch.ppo.core as core
 from spinup.utils.logx import EpochLogger
 from spinup.utils.mpi_pytorch import setup_pytorch_for_mpi, sync_params, mpi_avg_grads
 from spinup.utils.mpi_tools import mpi_fork, mpi_avg, proc_id, mpi_statistics_scalar, num_procs
-
+import os
 
 class PPOBuffer:
     """
@@ -208,9 +208,17 @@ def ppo(env_fn, actor_critic=core.MLPActorCritic, ac_kwargs=dict(), seed=0,
     env = env_fn()
     obs_dim = env.observation_space.shape
     act_dim = env.action_space.shape
+    
+    # Define model save path
+    model_path = '/workspaces/spinningup/models/hrd/mlp_actor_critic.pth'
 
-    # Create actor-critic module
-    ac = actor_critic(env.observation_space, env.action_space, **ac_kwargs)
+    # Check if model exists
+    if os.path.exists(f"{model_path}_pi.pth") and os.path.exists(f"{model_path}_v.pth"):
+        print("Loading existing model...")
+        ac = actor_critic(env.observation_space, env.action_space, load_path=model_path)
+    else:
+        # Create actor-critic module
+        ac = actor_critic(env.observation_space, env.action_space)
 
     # Sync params across processes
     sync_params(ac)
@@ -331,8 +339,12 @@ def ppo(env_fn, actor_critic=core.MLPActorCritic, ac_kwargs=dict(), seed=0,
 
         # Save model
         if (epoch % save_freq == 0) or (epoch == epochs-1):
-            logger.save_state({'env': env}, None)
-
+            logger.save_state({'env': env}, None)            
+            # Save model after training (example)
+            # Assuming some training logic here...
+            ac.save_model(model_path)
+            print("Model saved to", model_path)
+        
         # Perform PPO update!
         update()
 
@@ -352,6 +364,8 @@ def ppo(env_fn, actor_critic=core.MLPActorCritic, ac_kwargs=dict(), seed=0,
         logger.log_tabular('StopIter', average_only=True)
         logger.log_tabular('Time', time.time()-start_time)
         logger.dump_tabular()
+
+        
 
 if __name__ == '__main__':
     import argparse
