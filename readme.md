@@ -45,3 +45,5 @@ python -m spinup.run ppo --hid "[32,32]" --env LunarLander-v2 --exp_name install
 python -m spinup.run test_policy data/installtest/installtest_s0
 
 python -m spinup.run plot data/installtest/installtest_s0
+
+python spinningup/spinup/utils/plot.py /workspaces/spinningup/spinup/logs/hrd_test --xaxis 'TotalEnvInteracts' --value 'AverageEpRet' --smooth=8

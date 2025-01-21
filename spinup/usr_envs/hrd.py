@@ -8,17 +8,16 @@ class HuaRongDao(gym.Env):
     def __init__(self):
         super(HuaRongDao, self).__init__()
         self.modules = {
-            1: (1, 1),
-            2: (1, 1),
-            3: (1, 1),
-            4: (1, 1),
-            5: (1, 1),
-            6: (1, 1), 
-            7: (2, 1),
-            8: (2, 1), 
-            9: (1, 2), 
-            10: (1, 2), 
-            11: (2, 2)            
+            1: (2, 2),
+            2: (2, 1),
+            3: (1, 2),
+            4: (1, 2),
+            5: (1, 2),
+            6: (1, 2), 
+            7: (1, 1),
+            8: (1, 1), 
+            9: (1, 1), 
+            10: (1, 1)
         }
         self.state = self.generate_initial_state()
         self.action_space = gym.spaces.Discrete(4 * len(self.modules))  # 4个方向 * N个模块
@@ -26,26 +25,26 @@ class HuaRongDao(gym.Env):
 
     def generate_initial_state(self):
         state = np.zeros((5, 4), dtype=np.int32)
-        state[0, 0] = 7
-        state[0, 1] = 9
-        state[0, 2] = 9
-        state[0, 3] = 1
-        state[1, 0] = 7
-        state[1, 1] = 10
-        state[1, 2] = 10
-        state[1, 3] = 2
-        state[2, 0] = 6
-        state[2, 1] = 0
-        state[2, 2] = 0
-        state[2, 3] = 3
-        state[3, 0] = 8
-        state[3, 1] = 11
-        state[3, 2] = 11
-        state[3, 3] = 4
-        state[4, 0] = 8
-        state[4, 1] = 11
-        state[4, 2] = 11
-        state[4, 3] = 5
+        state[0, 0] = 3
+        state[0, 1] = 4
+        state[0, 2] = 5
+        state[0, 3] = 6
+        state[1, 0] = 3
+        state[1, 1] = 4
+        state[1, 2] = 5
+        state[1, 3] = 6
+        state[2, 0] = 1
+        state[2, 1] = 1
+        state[2, 2] = 7
+        state[2, 3] = 8
+        state[3, 0] = 1
+        state[3, 1] = 1
+        state[3, 2] = 2
+        state[3, 3] = 2
+        state[4, 0] = 0
+        state[4, 1] = 0
+        state[4, 2] = 9
+        state[4, 3] = 10
         return state
 
     def reset(self):
@@ -69,8 +68,8 @@ class HuaRongDao(gym.Env):
         if self.is_valid_move(module_id, direction):
             new_state = self.state.copy()
             self.move_module(module_id, direction)
-            reward = 1 if np.all(self.state[3:5, 1:3] == 11) else 0
-            done = reward == 1
+            reward = 1.0 if np.all(self.state[3:5, 1:3] == 1) else 0.0
+            done = reward == 1.0
         else:
             reward = -0.1
             done = False

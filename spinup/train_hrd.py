@@ -34,6 +34,6 @@ if __name__ == "__main__":
     ppo(env_fn=env_fn,
         ac_kwargs=ac_kwargs,
         steps_per_epoch=4000,
-        epochs=1,
-        gamma=0.999,
+        epochs=500,
+        gamma=0.98,
         logger_kwargs=logger_kwargs)

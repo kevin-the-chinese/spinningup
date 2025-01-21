@@ -13,14 +13,19 @@ def combined_shape(length, shape=None):
         return (length,)
     return (length, shape) if np.isscalar(shape) else (length, *shape)
 
+def mlp(sizes, activation, output_activation=nn.Identity):
+    layers = []
+    for j in range(len(sizes)-1):
+        act = activation if j < len(sizes)-2 else output_activation
+        layers += [nn.Linear(sizes[j], sizes[j+1]), act()]
+    return nn.Sequential(*layers)
 
-def mlp(sizes, activation, output_activation=nn.Softmax):
+def mlp_act(sizes, activation, output_activation=nn.Softmax):
     layers = []
     for j in range(len(sizes) - 1):
         act = activation if j < len(sizes) - 2 else output_activation
         layers += [nn.Linear(sizes[j], sizes[j + 1]), act(dim=-1) if act == nn.Softmax else act()]
     return nn.Sequential(*layers)
-
 
 def count_vars(module):
     return sum([np.prod(p.shape) for p in module.parameters()])
@@ -67,7 +72,7 @@ class MLPCategoricalActor(Actor):
     
     def __init__(self, obs_dim, act_dim, hidden_sizes, activation):
         super().__init__()
-        self.logits_net = mlp([obs_dim] + list(hidden_sizes) + [act_dim], activation)
+        self.logits_net = mlp_act([obs_dim] + list(hidden_sizes) + [act_dim], activation)
 
     def _distribution(self, obs):
         logits = self.logits_net(obs)
@@ -109,7 +114,7 @@ class MLPActorCritic(nn.Module):
 
 
     def __init__(self, observation_space, action_space, 
-                 hidden_sizes=(64,64), activation=nn.Tanh, 
+                 hidden_sizes=(128,64, 128), activation=nn.ReLU, 
                  load_path=None):
         super().__init__()
 

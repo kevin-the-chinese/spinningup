@@ -9,13 +9,13 @@
     },
     "actor_critic":	"MLPActorCritic",
     "clip_ratio":	0.2,
-    "env_fn":	"<function <lambda> at 0x7a04a9aa9ea0>",
-    "epochs":	1,
+    "env_fn":	"<function <lambda> at 0x7549f151dea0>",
+    "epochs":	500,
     "exp_name":	"hrd_test",
-    "gamma":	0.999,
+    "gamma":	0.98,
     "lam":	0.97,
     "logger":	{
-        "<spinup.utils.logx.EpochLogger object at 0x7a04a98e5fd0>":	{
+        "<spinup.utils.logx.EpochLogger object at 0x7549f135bf98>":	{
             "epoch_dict":	{},
             "exp_name":	"hrd_test",
             "first_row":	true,
