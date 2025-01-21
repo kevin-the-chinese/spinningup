@@ -58,6 +58,8 @@ class HuaRongDao(gym.Env):
                 if self.is_valid_move(module_id, direction):
                     self.move_module(module_id, direction)
                     break  # 退出内层循环，继续下一次移动
+        # print("Reset:")
+        # self.render()
         return self.state.flatten()
 
     def step(self, action):
@@ -74,7 +76,7 @@ class HuaRongDao(gym.Env):
             done = False
             new_state = self.state.copy()
         
-        return new_state.flatten(), reward, done, {}, {}
+        return new_state.flatten(), reward, done, {}
 
     def is_valid_move(self, module_id, direction):
         module_size = self.modules[module_id]
@@ -89,9 +91,16 @@ class HuaRongDao(gym.Env):
         elif direction == 'right':
             new_positions = module_positions + [0, 1]
         
+         # 检查新位置是否超出棋盘边界
         for pos in new_positions:
-            if pos[0] < 0 or pos[0] >= 5 or pos[1] < 0 or pos[1] >= 4 or self.state[pos[0], pos[1]] != 0:
+            if pos[0] < 0 or pos[0] >= 5 or pos[1] < 0 or pos[1] >= 4:
                 return False
+        
+        # 检查移动路径上是否有其他模块阻挡
+        for pos in new_positions:
+            if self.state[pos[0], pos[1]] != 0 and self.state[pos[0], pos[1]] != module_id:
+                return False
+
         return True
 
     def move_module(self, module_id, direction):
@@ -111,16 +120,24 @@ class HuaRongDao(gym.Env):
         self.state[new_positions[:, 0], new_positions[:, 1]] = module_id
 
     def render(self, mode='console', close=False):
+        # print(f"render: close:{close}, mode:{mode}")
         if close:
             return
-        if mode == 'console':
-            for row in self.state:
-                print(" ".join(map(str, row)))
-            print()
+        # if mode == 'console':
+        for row in self.state:
+            print(" ".join(map(str, row)))
+        print()
 
     def close(self):
         pass
 
+
+from gym.envs.registration import registry
+
+# 删除已注册的环境
+env_id = 'HuaRongDao-v0'
+if env_id in registry.env_specs:
+    del registry.env_specs[env_id]
 
 # 注册环境
 gym.register(
@@ -128,25 +145,3 @@ gym.register(
     entry_point='hrd:HuaRongDao',  # 确保模块名和类名正确
     max_episode_steps=1000,
 )
-
-# 创建环境
-env = gym.make('HuaRongDao-v0')
-
-# 重置环境
-state = env.reset()
-print("重置后的状态:")
-env.render()
-
-# 执行随机动作
-for _ in range(10):
-    action = env.action_space.sample()
-    state, reward, done, info, _ = env.step(action)
-    module_id = action // 4 + 1
-    direction = ['up', 'down', 'left', 'right'][action % 4]
-    print(f"执行动作: {module_id, direction}, 奖励: {reward}, 是否结束: {done}")
-    env.render()
-    if done:
-        break
-
-# 关闭环境
-env.close()
