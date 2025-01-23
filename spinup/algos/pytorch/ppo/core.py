@@ -114,7 +114,7 @@ class MLPActorCritic(nn.Module):
 
 
     def __init__(self, observation_space, action_space, 
-                 hidden_sizes=(128,64, 128), activation=nn.ReLU, 
+                 hidden_sizes=(128, 64, 128, 64, 64), activation=nn.ReLU, 
                  load_path=None):
         super().__init__()
 
@@ -132,6 +132,7 @@ class MLPActorCritic(nn.Module):
         # Load model if load_path is provided
         if load_path:
             self.load_model(load_path)
+            # self.load_original_params(load_path)
 
     def save_model(self, save_path):
         # Save both policy and value network
@@ -142,7 +143,29 @@ class MLPActorCritic(nn.Module):
         # Load both policy and value network
         self.pi.load_state_dict(torch.load(f"{load_path}_pi.pth", map_location=torch.device('cpu')))
         self.v.load_state_dict(torch.load(f"{load_path}_v.pth", map_location=torch.device('cpu')))
+    # Load original model parameters
+    def load_original_params(self, load_path):
+        # Load original model parameters
+        pi_original_state_dict = torch.load(f"{load_path}_pi.pth", map_location=torch.device('cpu'))
+        v_original_state_dict = torch.load(f"{load_path}_v.pth", map_location=torch.device('cpu'))
         
+        # Get current model's state dictionaries
+        pi_new_state_dict = self.pi.state_dict()
+        v_new_state_dict = self.v.state_dict()
+
+        # Copy parameters from the original model to the new model if shapes match
+        for key in pi_original_state_dict:
+            if key in pi_new_state_dict and pi_original_state_dict[key].shape == pi_new_state_dict[key].shape:
+                pi_new_state_dict[key] = pi_original_state_dict[key]
+
+        for key in v_original_state_dict:
+            if key in v_new_state_dict and v_original_state_dict[key].shape == v_new_state_dict[key].shape:
+                v_new_state_dict[key] = v_original_state_dict[key]
+
+        # Load the updated state dictionaries into the new model
+        self.pi.load_state_dict(pi_new_state_dict)
+        self.v.load_state_dict(v_new_state_dict)
+
     def step(self, obs):
         with torch.no_grad():
             pi = self.pi._distribution(obs)

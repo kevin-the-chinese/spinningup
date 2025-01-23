@@ -86,8 +86,8 @@ class PPOBuffer:
 
 
 def ppo(env_fn, actor_critic=core.MLPActorCritic, ac_kwargs=dict(), seed=0, 
-        steps_per_epoch=4000, epochs=50, gamma=0.99, clip_ratio=0.2, pi_lr=3e-4,
-        vf_lr=1e-3, train_pi_iters=80, train_v_iters=80, lam=0.97, max_ep_len=1000,
+        steps_per_epoch=4000, epochs=50, gamma=0.99, clip_ratio=0.2, pi_lr=3e-3,
+        vf_lr=1e-2, train_pi_iters=80, train_v_iters=80, lam=0.97, max_ep_len=1000,
         target_kl=0.01, logger_kwargs=dict(), save_freq=10):
     print(f"gamma = {gamma}")
     """
@@ -211,7 +211,7 @@ def ppo(env_fn, actor_critic=core.MLPActorCritic, ac_kwargs=dict(), seed=0,
     act_dim = env.action_space.shape
     
     # Define model save path
-    model_path = '/workspaces/spinningup/models/hrd/mlp_actor_critic.pth'
+    model_path = '/workspaces/spinningup/models/lunar_test/mlp_actor_critic.pth'
 
     # Check if model exists
     if os.path.exists(f"{model_path}_pi.pth") and os.path.exists(f"{model_path}_v.pth"):
@@ -264,8 +264,8 @@ def ppo(env_fn, actor_critic=core.MLPActorCritic, ac_kwargs=dict(), seed=0,
         return ((ac.v(obs) - ret)**2).mean()
 
     # Set up optimizers for policy and value function
-    pi_optimizer = Adam(ac.pi.parameters(), lr=pi_lr)
-    vf_optimizer = Adam(ac.v.parameters(), lr=vf_lr)
+    pi_optimizer = Adam(ac.pi.parameters(), lr=pi_lr, weight_decay=1e-2)
+    vf_optimizer = Adam(ac.v.parameters(), lr=vf_lr, weight_decay=1e-2)
 
     # Set up model saving
     logger.setup_pytorch_saver(ac)

@@ -49,14 +49,14 @@ class HuaRongDao(gym.Env):
 
     def reset(self):
         self.state = self.generate_initial_state()
-        M = random.randint(10, 100)  # 随机选择10到100之间的步数
-        for _ in range(M):
-            while True:
-                module_id = random.choice(list(self.modules.keys()))
-                direction = random.choice(['up', 'down', 'left', 'right'])
-                if self.is_valid_move(module_id, direction):
-                    self.move_module(module_id, direction)
-                    break  # 退出内层循环，继续下一次移动
+        # M = random.randint(10, 100)  # 随机选择10到100之间的步数
+        # for _ in range(M):
+        #     while True:
+        #         module_id = random.choice(list(self.modules.keys()))
+        #         direction = random.choice(['up', 'down', 'left', 'right'])
+        #         if self.is_valid_move(module_id, direction):
+        #             self.move_module(module_id, direction)
+        #             break  # 退出内层循环，继续下一次移动
         # print("Reset:")
         # self.render()
         return self.state.flatten()
@@ -71,7 +71,7 @@ class HuaRongDao(gym.Env):
             reward = 1.0 if np.all(self.state[3:5, 1:3] == 1) else 0.0
             done = reward == 1.0
         else:
-            reward = -0.1
+            reward = -0.0
             done = False
             new_state = self.state.copy()
         
