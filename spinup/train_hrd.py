@@ -22,18 +22,22 @@ import hrd
 
 # 导入Spinning Up的算法函数
 from spinup import ppo_pytorch as ppo
+from spinup.algos.pytorch.sac_dis.sac import sac
 import gym
 
 if __name__ == "__main__":
     # 定义训练参数
-    env_fn = lambda: gym.make('LunarLander-v2') # HuaRongDao-v0
+    # BipedalWalker-v2
+    # LunarLander-v2
+    # HuaRongDao-v0
+    env_fn = lambda: gym.make('HuaRongDao-v0') 
     ac_kwargs = dict(hidden_sizes=[128, 64, 128], activation=torch.nn.ReLU)
-    logger_kwargs = dict(output_dir='./logs/lunar_test', exp_name='lunar_test')
+    logger_kwargs = dict(output_dir='./logs/hrd_test', exp_name='sac')
 
     # 调用PPO算法
-    ppo(env_fn=env_fn,
+    sac(env_fn=env_fn,
         ac_kwargs=ac_kwargs,
-        steps_per_epoch=12000,
-        epochs=100,
+        steps_per_epoch=4000,
+        epochs=1000,
         gamma=0.999,
         logger_kwargs=logger_kwargs)

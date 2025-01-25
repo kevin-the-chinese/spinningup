@@ -72,7 +72,7 @@ class MLPCategoricalActor(Actor):
     
     def __init__(self, obs_dim, act_dim, hidden_sizes, activation):
         super().__init__()
-        self.logits_net = mlp_act([obs_dim] + list(hidden_sizes) + [act_dim], activation)
+        self.logits_net = mlp([obs_dim] + list(hidden_sizes) + [act_dim], activation)
 
     def _distribution(self, obs):
         logits = self.logits_net(obs)
@@ -114,7 +114,7 @@ class MLPActorCritic(nn.Module):
 
 
     def __init__(self, observation_space, action_space, 
-                 hidden_sizes=(128, 64, 128, 64, 64), activation=nn.ReLU, 
+                 hidden_sizes=(128, 64, 128, 64), activation=nn.ReLU, # 128, 64, 128, 
                  load_path=None):
         super().__init__()
 
